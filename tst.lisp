@@ -1,46 +1,49 @@
 (ql:quickload "cl-csv")
 
-;; (defparameter *csv-cols*
-;;   (car (cl-csv:read-csv #P"/home/koenvandenberg/insertdata/lisp/tst.csv")))
-
-(defvar csv-cols 1)
-
-(defparameter *suite*
+(defparameter *suitetest*
   (list
    (list
     :column "order"
+    :type "string"
+    :depends (list "order" "name")
     :message "La columna es vacio"
-    :logic (lambda (x) (string= x "")))
-   (list
-    :column "name"
-    :message "el nombre tiene que consistir de palabras"
-    :logic (lambda (x) (string= x "")))
+    :logic (lambda (x0 x1) (and (string= x0 "") (string= x1 "Chris"))))
    (list
     :column "city"
-    :message "El valor Stockholm no es correcto"
-    :logic (lambda (x) (string= x "Stockholm")))
+    :type "string"
+    :depends (list "city")
+    :message "el nombre no puede ser Manchester"
+    :logic (lambda (x) (string= x "Manchester")))
    (list
-    :column "article"
-    :message "La columna article es vacio"
-    :logic (lambda (x) (string= x "")))
-   (list
-    :column "size"
-    :message "La columna size es vacio"
-    :logic (lambda (x) (string= x "")))))
+    :column "order"
+    :type "string"
+    :depends (list "order" "name" "city")
+    :message "La columna tiene que ser llena si has Chris y Manchester"
+    :logic (lambda (x0 x1 x2) (and (string= x0 "")
+				   (and (string= x1 "Chris")
+					(string= x2 "Manchester")))))))
+
 
 (defun get-col-position (col-name cols)
   "Saca la posicion (en numero) de una columna por su nombre"
   (position col-name cols :test #'string=))
 
-(defun validate (value spec outfile index)
+(defun get-values (csv-cols spec record)
+  (let ((depends (getf spec :depends)))
+    (loop for x in depends
+	  collect (nth (get-col-position x (car csv-cols)) record)
+	    into record-values
+	  finally (return record-values))))
+				    
+(defun validate (vals spec outfile index)
   (let ((message (getf spec :message))
 	(column (getf spec :column))
-	(logic (getf spec :logic)))
-    (cond ((funcall logic value)
-	(format outfile "~a;~a;~a;~a~%" index value message column)))))
+	(logic (getf spec :logic))
+	(error-val (car vals)))
+    (cond ((apply logic vals)
+	(format outfile "~a;~a;~a;~a~%" index error-val message column)))))
 
 (defun main (in out)
-  "mueva lo que esta escrito abajo a una nueva funcion. progn --> pasos: 1 leer config, 2 validacion, 3 escribir resultados"
   (with-open-file (stream in)
     (with-open-file (str out
 			 :direction :output
@@ -53,12 +56,12 @@
 	    until (eq line :eof) do
 	      (cond ((eq (mod idx 1000) 0)
 		     (format t "#")))
-	      (let ((result (nth 0 (cl-csv:read-csv line))))
-		(loop for spec in *suite* do
-		  (let ((value (nth (get-col-position (getf spec :column)
-						      (car csv-cols))
-				    result)))
-		    (validate value spec str idx)))))))))
+	      (let ((record (nth 0 (cl-csv:read-csv line))))
+		(loop for spec in *suitetest* do
+		  (let ((vals (get-values csv-cols spec record)))
+		    (validate vals spec str idx)))))))))
+
+
 
 
 ; "/home/koenvandenberg/insertdata/lisp/tst.csv"
