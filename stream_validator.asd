@@ -19,7 +19,8 @@
                         :components ((:file "packages")
                                      (:file "stream_validator")
 				     (:file "parallel")
-				     (:file "validator"))))
+				     (:file "validator")
+				     (:file "taxi_suite"))))
 
   ;; Build a binary:
   ;; don't change this line.
