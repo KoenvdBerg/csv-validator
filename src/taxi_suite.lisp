@@ -7,7 +7,7 @@
   (local-time:parse-timestring x
 			       :start 0
 			       :end 10
-			       :fail-on-error nil)))
+			       :fail-on-error nil))
 
 
 (defparameter *taxidata*
