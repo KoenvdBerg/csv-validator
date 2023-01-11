@@ -35,7 +35,7 @@
   (let ((in (clingon:getopt cmd :infile))
 	(out (clingon:getopt cmd :outfile))
 	(threads (clingon:getopt cmd :threads)))
-    (time (validate-main in out threads))))
+    (time (validate-main in out *medical_suite* :threads threads))))
 
 (defun validate/command ()
   "A command to validate someone"
@@ -55,11 +55,10 @@
 
 (defun validate-main (in outdir validation-suite &key (threads 1))
   ;; saca la fila header y suite que funciona
-  (let* ;; ((in (add-index-to-file in outdir))			 
-	 ((header (get-header-row in))
-	 (suite (header-suite-works header validation-suite)))
-    ;; escribir el archivo out y apremiar el header del csv en out
-    ;; (format str "index;error_value;error_message;column~%")
+  (let*  ;;((in (add-index-to-file in outdir))
+	  ((header (get-header-row in))
+	  (suite (header-suite-works header validation-suite)))
+	  ;; (missing-headers (write-header-validation validation-suite suite)))
     (cond ((<= threads 1) (run-validation in outdir header suite))
 	  ((> threads 1)
 	   ;; divide el archivo in en n particiones:
@@ -73,4 +72,5 @@
 					      f outdir header suite))
 	      (lparallel:receive-result channel))
 	   (shutdown)
-	   (cleanup-splits outdir)))))
+	   (cleanup-splits outdir)))
+    (join-splits-together outdir)))

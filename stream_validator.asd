@@ -10,7 +10,7 @@
   :source-control (:git "")
 
   ;; Dependencies.
-  :depends-on (:local-time :cl-csv :clingon :trivial-shell :lparallel)
+  :depends-on (:local-time :clingon :trivial-shell :lparallel)
 
   ;; Project stucture.
   :serial t
@@ -20,7 +20,7 @@
                                      (:file "stream_validator")
 				     (:file "parallel")
 				     (:file "validator")
-				     (:file "taxi_suite"))))
+				     (:file "suites"))))
 
   ;; Build a binary:
   ;; don't change this line.

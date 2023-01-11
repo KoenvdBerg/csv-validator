@@ -2,32 +2,11 @@
 (in-package :stream_validator)
 
 ;; Helper functions:
-(defun count-lines (file &optional (buffer-size 32768))
-  (declare (optimize (speed 3) (debug 0) (safety 0))
-           (type fixnum buffer-size))
-  (let ((buffer
-         (make-array buffer-size
-                     :element-type #1='(unsigned-byte 8)))
-        (sum 0)
-        (end 0))
-    (declare (type fixnum sum end))
-    (with-open-file (in file :element-type #1#)
-      (loop
-         (setf end (read-sequence buffer in))
-         (when (= end 0)
-           (return sum))
-         (dotimes (i end)
-           (declare (type fixnum i)
-                    (dynamic-extent i))
-           (when (= 10
-                    (aref buffer i))
-             (incf sum)))))))
-
 (defun move-working-dir (target-dir)
   (sb-posix:chdir target-dir))
 
-(defun list-dir (outdir &optional (prefix "x"))
-  (directory (format nil "~a~a*" outdir prefix)))
+(defun list-dir (outdir &optional (prefix "x*"))
+  (directory (format nil "~a~a" outdir prefix)))
 
 (defun split-file-in-n (nr-files infile outdir)
   "divide el archivo out en differentes divisiones basado en el parameter nr-files"
@@ -41,11 +20,29 @@
     (trivial-shell:shell-command command)
     outfile))
 
-
 (defun cleanup-splits (outdir)
   (let ((to-cleanup (list-dir outdir)))
     (loop for f in to-cleanup do
       (delete-file f))))
+
+(defun join-splits-together (outdir)
+  ;; write the header to the final result
+  (let ((header-file (format nil "~aheader.csv" outdir)))
+    (with-open-file (outstr header-file
+			    :direction :output
+			    :if-exists :supersede
+			    :if-does-not-exist :create)
+      (format outstr "index;column;erronuous_value;message~%"))
+    ;; join all the files together
+    (let* ((to-join (append (list header-file)
+			    (list-dir outdir "result_*.csv")))
+	   (outfile (format nil "~aerrors.csv" outdir))
+	   (command (format nil "cat ~{~a ~} > ~a" to-join outfile)))
+      (print command)
+      (trivial-shell:shell-command command)
+      (loop for f in to-join do
+	(delete-file f))
+      "errors.csv")))
 
 
 ;; initialise the kernel and parallel functions

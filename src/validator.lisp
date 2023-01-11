@@ -77,9 +77,9 @@ de retorno es una lista con los spec que funcionan"
 			(concatenate 'list (list column) depends))
 	for col-positions = (loop for c in to-check
 				  collect (get-col-position c header) into res
-				  finally (return res)) 
-	collect (when (notany #'null col-positions)
-		  spec)))
+				  finally (return res))
+	when (notany #'null col-positions)
+	  collect spec))
 
 (defun run-validation (in outdir header suite)
   "funcion main"
@@ -99,8 +99,3 @@ de retorno es una lista con los spec que funcionan"
 		       (loop for spec in suite do
 			 (let ((vals (get-values header spec record)))
 			   (validate vals spec idx))))))))))
-
-
-
-
-
