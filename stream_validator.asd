@@ -17,8 +17,10 @@
   :components ((:module "src"
                         :serial t
                         :components ((:file "packages")
-                                     (:file "stream_validator")
+                                     (:file "main")
 				     (:file "parallel")
+				     (:file "output")
+				     (:file "csv")
 				     (:file "validator")
 				     (:file "suites"))))
 

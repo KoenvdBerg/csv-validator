@@ -16,58 +16,15 @@
 ;; error son definidos en el 'suite' de validacion.
 (in-package :stream_validator)
 
-;; funciones que sirven para obtener valores
-(defun get-col-position (col-name cols)
-  "Saca la posicion (en numero) de una columna por su nombre"
-  (position col-name cols :test #'string=))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HEADER VALIDATION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun get-header-row (infile)
   "saca la fila header del csv infile"
   (with-open-file (stream infile)
     (to-record (split-string #\, (read-line stream nil :eof)))))
 
-
-(defun get-values (header spec record)
-  "saca los valores de un record basado en el spec del suite"
-  (let ((depends (getf spec :depends)))
-    (loop for x in depends
-	  collect (aref record (get-col-position x header)))))
-
-
-;; funciones que sirven para cargar datos del archivo csv
-;; https://github.com/ebobby/cl-simple-table
-(defun split-string (separator str)
-  "Splits a string using the given separator, returns a list with the substrings."
-  (declare (type character separator)
-           (type string str))
-  (loop
-     with len = (length str)
-     for fr = 0 then (1+ in)
-     while (<= fr len)
-     for in = (or (position separator str :test #'char= :start fr) len)
-     collect (subseq str fr in)))
-
-(defun to-record (elements)
-  "Converts a sequence of elements into a record."
-  (coerce elements 'record))
-
-(deftype record ()
-  "record type."
-  `(vector t *))
-
-
-;; funciones que sirven para hacer la validacion de los datos
-(defun validate (vals spec index)
-  "validacion de los datos pasa aqui"
-  (let ((message (getf spec :message))
-	(column (getf spec :column))
-	(logic (getf spec :logic))
-	(error-val (car vals)))
-    (when (not (apply logic vals))
-	(format t "~a;~a;~a;~a~%" index column error-val message))))
-
-
-(defun header-suite-works (header suite)
+(defun validate-header (header suite)
   "aproba si la fila header este representada dentro del suite. El valor
 de retorno es una lista con los spec que funcionan"
   (loop for spec in suite
@@ -81,13 +38,37 @@ de retorno es una lista con los spec que funcionan"
 	when (notany #'null col-positions)
 	  collect spec))
 
-(defun run-validation (in outdir header suite)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; RECORD VALIDATION 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun get-col-position (col-name cols)
+  "Saca la posicion (en numero) de una columna por su nombre"
+  (position col-name cols :test #'string=))
+
+(defun get-values (header spec record)
+  "saca los valores de un record basado en el spec del suite"
+  (let ((depends (getf spec :depends)))
+    (loop for x in depends
+	  collect (aref record (get-col-position x header)))))
+
+(defun validate-record (vals spec index)
+  "validacion de los datos pasa aqui"
+  (let ((message (getf spec :message))
+	(column (getf spec :column))
+	(logic (getf spec :logic))
+	(error-val (car vals)))
+    (when (not (apply logic vals))
+	(format t "~a;~a;~a;~a~%" index column error-val message))))
+
+(defun run-record-validation (in outdir header suite)
   "funcion main"
   (with-open-file (stream in)
-    (with-open-file (*standard-output* (format nil "~aresult_~a.csv" outdir (gensym))
-			 :direction :output
-			 :if-exists :supersede
-			 :if-does-not-exist :create)
+    (with-open-file (*standard-output*
+		     (format nil "~atmp_record_validation_id=~a.csv"
+			     outdir (gensym))
+		     :direction :output
+		     :if-exists :supersede
+		     :if-does-not-exist :create)
       ;; un bucle sobre las filas del csv.
       (loop for line = (read-line stream nil :eof)
 	    until (eq line :eof) do
@@ -98,4 +79,4 @@ de retorno es una lista con los spec que funcionan"
 		       ;; por cada spec in suite, haz la validacion
 		       (loop for spec in suite do
 			 (let ((vals (get-values header spec record)))
-			   (validate vals spec idx))))))))))
+			   (validate-record vals spec idx))))))))))
