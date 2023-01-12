@@ -12,38 +12,45 @@
   "divide el archivo out en differentes divisiones basado en el parameter nr-files"
   (move-working-dir outdir)
   (let ((command (format nil "split --number=l/~a ~a" nr-files infile)))
-    (trivial-shell:shell-command command)))
+    (uiop:run-program command)))
 
 (defun add-index-to-file (infile outdir)
   (let* ((outfile (format nil "~a~a" outdir "with_index.csv"))
-	 (command (format nil "nl -s ',' -w 1 -v 0 ~a > ~a" infile outfile)))
-    (trivial-shell:shell-command command)
+	 (command (format nil "nl -s ',' -w 1 -v 0 ~a" infile)))
+    (uiop:run-program command :output (pathname outfile))
     outfile))
 
-(defun cleanup-splits (outdir)
-  (let ((to-cleanup (list-dir outdir)))
+(defun cleanup-outdir (outdir)
+  ;; cleanup the splits (if present)
+  (let ((to-cleanup (list-dir outdir "x*")))
     (loop for f in to-cleanup do
-      (delete-file f))))
+      (delete-file f)))
+  ;; cleanup the worker results (if present)
+  (let ((to-cleanup (list-dir outdir "result_*.csv")))
+    (loop for f in to-cleanup do
+      (delete-file f)))
+  (delete-file (car (list-dir outdir "header.csv"))))
 
-(defun join-splits-together (outdir)
-  ;; write the header to the final result
+(defun write-header-file (outdir)
   (let ((header-file (format nil "~aheader.csv" outdir)))
     (with-open-file (outstr header-file
 			    :direction :output
 			    :if-exists :supersede
 			    :if-does-not-exist :create)
       (format outstr "index;column;erronuous_value;message~%"))
-    ;; join all the files together
-    (let* ((to-join (append (list header-file)
-			    (list-dir outdir "result_*.csv")))
-	   (outfile (format nil "~aerrors.csv" outdir))
-	   (command (format nil "cat ~{~a ~} > ~a" to-join outfile)))
-      (print command)
-      (trivial-shell:shell-command command)
-      (loop for f in to-join do
-	(delete-file f))
-      "errors.csv")))
+    (pathname header-file)))
 
+(defun join-files-together (filepaths outdir)
+  (let* ((outfile (format nil "~aerrors.csv" outdir))
+	 (command (format nil "cat ~{~a ~}" filepaths)))
+    (uiop:run-program command :output (pathname outfile))
+    (pathname outfile)))
+
+(defun write-result-file (outdir)
+  (let* ((header-file (write-header-file outdir))
+	 (result-files (list-dir outdir "result_*.csv"))
+	 (to-join (append (list header-file) result-files)))
+    (join-files-together to-join outdir)))
 
 ;; initialise the kernel and parallel functions
 (defun init (threads)

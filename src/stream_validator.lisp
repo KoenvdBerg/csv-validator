@@ -67,10 +67,9 @@
 	   (init threads)
 	    (let ((channel (lparallel:make-channel)))
 	      (loop for f in (list-dir outdir)
-		    ;; for idx from 0
 		    do (lparallel:submit-task channel #'run-validation
 					      f outdir header suite))
 	      (lparallel:receive-result channel))
-	   (shutdown)
-	   (cleanup-splits outdir)))
-    (join-splits-together outdir)))
+	   (shutdown)))
+    (write-result-file outdir)
+    (cleanup-outdir outdir)))
