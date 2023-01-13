@@ -21,21 +21,42 @@
     :env-vars '()
     :key :outfile)
    (clingon:make-option
+    :enum
+    :description "the validation suite to be validated with"
+    :short-name #\s
+    :long-name "validation-suite"
+    :required t
+    :env-vars '()
+    :key :selected-suite
+    :items   `(("medical" . ,*medical_suite*)
+	       ("taxi" . ,*taxidata*)))
+   (clingon:make-option
     :integer
     :description "the amount of threads to use for the validation"
     :short-name #\t
     :long-name "threads"
-    :required t
+    :required nil
+    :initial-value 1
     :env-vars '()
-    :key :threads)))
-
+    :key :threads)
+   (clingon:make-option
+    :string
+    :description "the csv delimiter (single character). Examples: [; , | + : #]"
+    :short-name #\d
+    :long-name "csv-delimiter"
+    :required nil
+    :initial-value ","
+    :env-vars '()
+    :key :csv-delim)))
 
 (defun validate/handler (cmd)
   "Handler for the `validate' command"
   (let ((in (clingon:getopt cmd :infile))
 	(out (clingon:getopt cmd :outfile))
-	(threads (clingon:getopt cmd :threads)))
-    (validate-main in out *medical_suite* :threads threads)))
+	(suite (clingon:getopt cmd :selected-suite))
+	(threads (clingon:getopt cmd :threads))
+	(csv-delim (char (clingon:getopt cmd :csv-delim) 0)))
+    (validate-main in out suite :threads threads :delim csv-delim)))
 
 (defun validate/command ()
   "A command to validate someone"
@@ -44,7 +65,7 @@
    :description "validates data"
    :version "0.1.0"
    :authors '("Koen van den Berg <k.vandenberg@insertdata.nl>")
-   :license "MIT"
+   :license "BSD"
    :options (validate/options)
    :handler #'validate/handler))
 
@@ -53,23 +74,22 @@
   (let ((app (validate/command)))
     (clingon:run app)))
 
-(defun validate-main (in outdir validation-suite &key (threads 1))
-  ;; saca la fila header y suite que funciona
-  (let*  ;;((in (add-index-to-file in outdir))
-	  ((header (get-header-row in))
-	   (suite (validate-header header validation-suite))
-	   (missing-header (set-difference validation-suite suite)))
-    (cond ((<= threads 1) (run-record-validation in outdir header suite))
+(defun validate-main (in outdir validation-suite &key (threads 1) (delim #\,))
+  (let* ((in (add-index-to-file in delim outdir))
+	 (header (get-header-row in delim))
+	 (suite (validate-header header validation-suite))
+	 (missing-header (set-difference validation-suite suite)))
+    (cond ((<= threads 1) (run-record-validation in outdir header suite delim))
 	  ((> threads 1)
-	   ;; divide el archivo in en n particiones:
+	   ;; If threads is greater than 1, the infile is split into divisions,
+	   ;; 1 division for each thread. The thread can then run autonomously.
 	   (split-file-in-n threads in outdir)
-	   ;; init workers que procesan cada archivo
 	   (init threads)
-	    (let ((channel (lparallel:make-channel)))
-	      (loop for f in (list-dir outdir)
-		    do (lparallel:submit-task channel #'run-record-validation
-					      f outdir header suite))
-	      (lparallel:receive-result channel))
+	   (let ((channel (lparallel:make-channel)))
+	     (loop for f in (list-dir outdir)
+		   do (lparallel:submit-task channel #'run-record-validation
+					     f outdir header suite delim))
+	     (lparallel:receive-result channel))
 	   (shutdown)))
     (write-result-file missing-header outdir)
     (cleanup-outdir outdir)))

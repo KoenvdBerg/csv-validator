@@ -10,7 +10,7 @@
   :source-control (:git "")
 
   ;; Dependencies.
-  :depends-on (:local-time :clingon :trivial-shell :lparallel)
+  :depends-on (:local-time :clingon :lparallel)
 
   ;; Project stucture.
   :serial t

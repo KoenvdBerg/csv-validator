@@ -19,10 +19,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HEADER VALIDATION
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun get-header-row (infile)
+(defun get-header-row (infile delim)
   "saca la fila header del csv infile"
   (with-open-file (stream infile)
-    (to-record (split-string #\, (read-line stream nil :eof)))))
+    (to-record (split-string delim (read-line stream nil :eof)))))
 
 (defun validate-header (header suite)
   "aproba si la fila header este representada dentro del suite. El valor
@@ -60,7 +60,7 @@ de retorno es una lista con los spec que funcionan"
     (when (not (apply logic vals))
 	(format t "~a;~a;~a;~a~%" index column error-val message))))
 
-(defun run-record-validation (in outdir header suite)
+(defun run-record-validation (in outdir header suite delim)
   "funcion main"
   (with-open-file (stream in)
     (with-open-file (*standard-output*
@@ -73,7 +73,7 @@ de retorno es una lista con los spec que funcionan"
       (loop for line = (read-line stream nil :eof)
 	    until (eq line :eof) do
 	      ;; hace que la fila header no esta processada
-	      (let* ((record (to-record (split-string #\, line)))
+	      (let* ((record (to-record (split-string delim line)))
 		     (idx (aref record 0)))
 		(cond ((not (equalp record header))
 		       ;; por cada spec in suite, haz la validacion
