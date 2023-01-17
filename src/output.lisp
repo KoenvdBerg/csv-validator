@@ -10,6 +10,20 @@
 ;; HEADER VALIDATION
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun write-header-validation-file (missing-header outdir)
+  "writes the validation file that contains the missing headers. A
+  missing header is a column that was defined in the validation-suite,
+  but couldn't be found back in the input csv
+
+  args
+  ----
+  missing-header: a list that contains each spec of the validation
+  suite that couldn't be found back in the input csv file
+  outdir: filepath to the output directory where the results will be stored
+
+  returns
+  ----
+  filepath to the header validation file
+  "
   (let ((header-validation-file (format nil "~atmp_header_validation.csv" outdir))
 	(missing-cols (remove-duplicates (loop for spec in missing-header
 			    collect (getf spec :column)))))
@@ -26,7 +40,18 @@
 ;; RECORD VALIDATION 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun write-result-header-file (outdir)
-  "Writes the header row of the validation result file"
+  "Writes the header row of the validation result file. This is being
+  done here so that the stream_validator can be run in parallel
+  without having to keep the csv header of each output into account.
+
+  args
+  ----
+  outdir: filepath to the output directory where the results will be stored
+
+  returns
+  ----
+  filepath to the file that contains the header row
+  "
   (let ((header-file (format nil "~atmp_headerrow.csv" outdir)))
     (with-open-file (outstr header-file
 			    :direction :output
@@ -36,7 +61,17 @@
     (pathname header-file)))
 
 (defun write-result-file (missing-header outdir)
-  "Writes individual validation result files and combines them together"
+  "Writes individual validation result files and combines them together.
+
+  args
+  ----
+  outdir: filepath to the output directory where the results will be stored
+  missing-header: a list that contains each spec of the validation
+
+  returns
+  ----
+  filepath to the final result file that contains all validations
+  "
   (let* ((result-header-file (write-result-header-file outdir))
 	 (header-validation-file
 	   (write-header-validation-file missing-header outdir))
@@ -46,6 +81,24 @@
 			  result-files))) 
     (join-files-together to-join outdir)))
 
+(defun write-record-to-stream (str index spec vals)
+  "Writes the result of a record-validation to an output file
+
+  args
+  ----
+  str: output stream
+  index: the index (row number) of the input csv
+  spec: a single specification of a validation suite as a list
+  vals: the values that are relevant for this result
+
+  returns
+  ----
+  nil
+  "
+  (let ((message (getf spec :message))
+	(column (getf spec :column))
+	(error-val (car vals)))
+    (format str "~a;~a;~a;~a~%" index column error-val message)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL 

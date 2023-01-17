@@ -7,7 +7,21 @@
 ;; funciones que sirven para cargar datos del archivo csv
 ;; https://github.com/ebobby/cl-simple-table
 (defun split-string (separator str)
-  "Splits a string using the given separator, returns a list with the substrings."
+  "Splits a string using the given separator, returns a list with the substrings.
+
+  args
+  ----
+  separator: character that is used to split the input csv with
+  str: the input string that will be split
+
+  returns
+  ----
+  list with elements between delimiter
+
+  example
+  ----
+  name;age;gender --> (\"name\" \"age\" \"gender\")
+  "
   (declare (type character separator)
            (type string str))
   (loop

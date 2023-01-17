@@ -75,6 +75,20 @@
     (clingon:run app)))
 
 (defun validate-main (in outdir validation-suite &key (threads 1) (delim #\,))
+  "Main function that is used to apply the stream_validator to a dataset
+
+  args
+  ----
+  in: filepath to the input csv file
+  outdir: filepath to the output directory where the results will be stored
+  validation-suite: the suite to use to validate the input csv to
+  threads: integer that indicates the amount of threads to use. Best is between 1-4
+  delim: the csv delimiter
+
+  returns
+  ----
+  nil  
+  "
   (let* ((in (add-index-to-file in delim outdir))
 	 (header (get-header-row in delim))
 	 (suite (validate-header header validation-suite))
