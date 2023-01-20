@@ -1,6 +1,6 @@
 (in-package :asdf-user)
 
-(defsystem "stream_validator"
+(defsystem "csv-validator"
   :author "Koen van den Berg <k.vandenberg@insertdata.nl>"
   :version "0.0.1"
   :license "MIT"
@@ -10,7 +10,7 @@
   :source-control (:git "")
 
   ;; Dependencies.
-  :depends-on (:local-time :clingon :lparallel :chronicity)
+  :depends-on (:local-time :clingon :lparallel)
 
   ;; Project stucture.
   :serial t
@@ -29,6 +29,6 @@
   ;; don't change this line.
   :build-operation "program-op"
   ;; binary name: adapt.
-  :build-pathname "stream_validator"
+  :build-pathname "csv-validator"
   ;; entry point: here "main" is an exported symbol. Otherwise, use a double ::
-  :entry-point "stream_validator:main")
+  :entry-point "csv-validator:main")

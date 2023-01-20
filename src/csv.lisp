@@ -2,7 +2,7 @@
 ;;
 ;; Shoutout to: https://github.com/ebobby/cl-simple-table
 
-(in-package :stream_validator)
+(in-package :csv-validator)
 
 ;; funciones que sirven para cargar datos del archivo csv
 ;; https://github.com/ebobby/cl-simple-table

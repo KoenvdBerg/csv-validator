@@ -1,6 +1,6 @@
-;; This file contains the functions that enable the stream_validator
+;; This file contains the functions that enable the csv-validator
 ;; to run in parallel. 
-(in-package :stream_validator)
+(in-package :csv-validator)
 
 
 ;; initialise the kernel and parallel functions

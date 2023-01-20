@@ -4,7 +4,7 @@
 ;; errors.csv
 ;;
 ;; By: Koen van den Berg
-(in-package :stream_validator)
+(in-package :csv-validator)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HEADER VALIDATION
@@ -41,7 +41,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun write-result-header-file (outdir)
   "Writes the header row of the validation result file. This is being
-  done here so that the stream_validator can be run in parallel
+  done here so that the csv-validator can be run in parallel
   without having to keep the csv header of each output into account.
 
   args
@@ -126,7 +126,7 @@
 
 (defun join-files-together (filepaths outdir)
   "Appends multiple csv files together vertically to new file called errors.csv"
-  (let* ((outfile (format nil "~astream_validator_validations.csv" outdir))
+  (let* ((outfile (format nil "~acsv-validator_validations.csv" outdir))
 	 (command (format nil "cat ~{~a ~}" filepaths)))
     (uiop:run-program command :output (pathname outfile))
     (pathname outfile)))

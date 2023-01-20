@@ -1,4 +1,4 @@
-(in-package :stream_validator)
+(in-package :csv-validator)
 
 ;; Define your project functionality here...
 (defun validate/options ()
@@ -75,7 +75,7 @@
     (clingon:run app)))
 
 (defun validate-main (in outdir validation-suite &key (threads 1) (delim #\,))
-  "Main function that is used to apply the stream_validator to a dataset
+  "Main function that is used to apply the csv-validator to a dataset
 
   args
   ----

@@ -7,9 +7,9 @@ run:
 
 build:
 	$(LISP)	--non-interactive \
-		--load stream_validator.asd \
-		--eval '(ql:quickload :stream_validator)' \
-		--eval '(asdf:make :stream_validator)'
+		--load csv-validator.asd \
+		--eval '(ql:quickload :csv-validator)' \
+		--eval '(asdf:make :csv-validator)'
 
 test:
 	$(LISP) --non-interactive \

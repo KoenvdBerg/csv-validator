@@ -1,4 +1,4 @@
-(defpackage :stream_validator
+(defpackage :csv-validator
   (:use :cl)
   (:export
    :main

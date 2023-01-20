@@ -2,7 +2,7 @@
 ;;
 ;; By: Koen van den Berg
 
-(in-package :stream_validator)
+(in-package :csv-validator)
   
 ;; data type validations
 (defun check-integer-string (x)

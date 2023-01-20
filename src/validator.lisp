@@ -14,7 +14,7 @@
 ;; incluya las columnas: nombre_columna, valor_equivocado, index,
 ;; logica, mensaje_de_error. --> los valores para logica y mensaje de
 ;; error son definidos en el 'suite' de validacion.
-(in-package :stream_validator)
+(in-package :csv-validator)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HEADER VALIDATION
@@ -147,7 +147,7 @@
 		(cond ((not (equalp record header))
 		       ;; for every spec in the validation-suite,
 		       ;; perform the validation. Write result if
-		       ;; validation returned true.
+		       ;; validation returned false.
 		       (loop for spec in suite do
 			 (let ((vals (get-values header spec record)))
 			   (when (not (validate-record vals spec))

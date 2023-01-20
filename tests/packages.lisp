@@ -1,8 +1,8 @@
 (in-package :asdf-user)
-(defpackage :stream_validator-tests
+(defpackage :csv-validator-tests
   (:use :common-lisp
         :fiveam
-        :stream_validator))
+        :csv-validator))
 
 
-(in-package :stream_validator-tests)
+(in-package :csv-validator-tests)

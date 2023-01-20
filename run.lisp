@@ -13,11 +13,11 @@ If you don't want to land in the REPL, you can (quit) below or call lisp with th
 Another solution to run the app is to build and run a binary (see README).
 "
 
-(load "stream_validator.asd")
+(load "csv-validator.asd")
 
-(ql:quickload "stream_validator")
+(ql:quickload "csv-validator")
 
-(in-package :stream_validator)
+(in-package :csv-validator)
 (handler-case
     (main)
   (error (c)
