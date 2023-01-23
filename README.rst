@@ -1,12 +1,7 @@
 csv-validator
 =============
 
-.. toctree::
-   :maxdepth: 3
-   :glob:
-
-   *
-
+.. contents:: Table of Contents
    
 Introductionary text here...
 
