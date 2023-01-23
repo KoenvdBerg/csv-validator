@@ -1,27 +1,27 @@
-* csv-validator
-:PROPERTIES:
-:TOC:      :include all
-:END:
+csv-validator
+=============
 
-Table of contents:
+.. toctree::
+   :maxdepth: 3
+   :glob:
 
-:CONTENTS:
-- [[#Benchmark][Benchmark]]
-- [[Get started][Get started]]
-  - [[#Installation][Installation]]
-  - [[#Running\ your\ first\ validation][YFV]]
-:END:
+   *
 
+   
 Introductionary text here...
 
 Example
 
 explain why here
 
-** Benchmark
+Benchmark
+---------
 
-** Get started                                                  :get_started:
-*** Installation
+Get started
+---------
+
+Installation
+~~~~~~~~~~
 
 Run from the repl:
 1. open run.lisp
@@ -46,10 +46,14 @@ $ ./stream_validator [name]
 Hello [name] from stream_validator
 ```
 
-*** Running your first validation
-*** Creating validations
+Running your first validation
+~~~~~~~~~~
 
-*** Contributing
+Creating validations
+~~~~~~~~~~
+
+Contributing
+~~~~~~~~~~
 
 Tests are defined with [Fiveam](https://common-lisp.net/project/fiveam/docs/).
 
