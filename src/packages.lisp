@@ -8,4 +8,5 @@
    :check-not-null
    :check-date-before-today
    :check-compare-two-dates
-   :check-integer-in-range))
+   :check-integer-in-range
+   :validate-csv))

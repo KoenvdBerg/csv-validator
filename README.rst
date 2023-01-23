@@ -1,15 +1,26 @@
 csv-validator
 =============
 
-.. contents:: Table of Contents
+Are you looking to validate large heaps of data (in csv format)
+quickly while still having the flexibility that Common Lisp offers?
+This library is specifically designed to do that. It is most suitable
+to support a scenario with incoming csv files that are expected to
+have similar header and similar contents each delivery. See the
+example below for how it's used:
 
+GIF EXAMPLE
+
+This README contains the sections mentioned below. If you'd like to
+get started, hop over to the "Get started" section. A benchmark
+demonstrating the speed for different file sizes is also included.
+
+.. contents:: Table of Contents
 
 Example
 
-explain why here
-
 Benchmark
 ---------
+https://data.open-power-system-data.org/national_generation_capacity/2020-10-01
 
 Get started
 ---------

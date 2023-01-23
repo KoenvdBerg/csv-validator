@@ -1,4 +1,5 @@
 bin/
 src/*.fasl
 src/validation_suites.lisp
+src/column_validation.lisp
 TODO.org

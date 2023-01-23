@@ -33,8 +33,8 @@
 			    :if-exists :supersede
 			    :if-does-not-exist :create)
       (loop for col in missing-cols
-	    for message = (format nil "The column ~a is missing from the input data" col)
-	    do (format outstr "~a;~a;~a;~a~%" 0 col col message)))
+	    for label = (format nil "missing-header")
+	    do (format outstr "~a;~a;~a;~a~%" 0 col col label)))
     header-validation-file))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -59,7 +59,7 @@
 			    :direction :output
 			    :if-exists :supersede
 			    :if-does-not-exist :create)
-      (format outstr "index;column;erronuous_value;message~%"))
+      (format outstr "index;column;erronuous_value;label~%"))
     (pathname header-file)))
 
 (defun write-result-file (missing-header outdir)
@@ -98,10 +98,10 @@
   ----
   nil
   "
-  (let ((message (getf spec :message))
+  (let ((label (getf spec :label))
 	(column (getf spec :column))
 	(error-val (car vals)))
-    (format str "~a;~a;~a;~a~%" index column error-val message)))
+    (format str "~a;~a;~a;~a~%" index column error-val label)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL 

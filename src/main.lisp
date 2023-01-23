@@ -56,7 +56,7 @@
 	(suite (clingon:getopt cmd :selected-suite))
 	(threads (clingon:getopt cmd :threads))
 	(csv-delim (char (clingon:getopt cmd :csv-delim) 0)))
-    (validate-main in out suite :threads threads :delim csv-delim)))
+    (validate-csv in out suite :threads threads :delim csv-delim)))
 
 (defun validate/command ()
   "A command to validate someone"
@@ -74,7 +74,7 @@
   (let ((app (validate/command)))
     (clingon:run app)))
 
-(defun validate-main (in outdir validation-suite &key (threads 1) (delim #\,))
+(defun validate-csv (in outdir validation-suite &key (threads 1) (delim #\,))
   "Main function that is used to apply the csv-validator to a dataset
 
   args
