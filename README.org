@@ -7,7 +7,7 @@ Table of contents:
 
 :CONTENTS:
 - [[#Benchmark][Benchmark]]
-- [[*Get started][Get started]]
+- [[Get started][Get started]]
   - [[#Installation][Installation]]
   - [[#Running\ your\ first\ validation][YFV]]
 :END:
@@ -20,7 +20,7 @@ explain why here
 
 ** Benchmark
 
-** Get started
+** Get started                                                  :get_started:
 *** Installation
 
 Run from the repl:
@@ -58,4 +58,5 @@ Run them from the terminal with `make test`. You should see a failing test.
 On Slime, load the test package and run `run!`.
 
 Licence: BSD
+
 
