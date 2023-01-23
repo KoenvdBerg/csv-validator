@@ -1,5 +1,3 @@
-#+TITLE:
-
 * csv-validator
 :PROPERTIES:
 :TOC:      :include all
@@ -9,7 +7,7 @@ Table of contents:
 
 :CONTENTS:
 - [[#Benchmark][Benchmark]]
-- [[#Tutorials][Tutorials]]
+- [[*Get started][Get started]]
   - [[#Installation][Installation]]
   - [[#Running\ your\ first\ validation][YFV]]
 :END:
@@ -22,7 +20,7 @@ explain why here
 
 ** Benchmark
 
-** Tutorials
+** Get started
 *** Installation
 
 Run from the repl:
