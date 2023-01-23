@@ -11,8 +11,8 @@
 
   args
   ----
-  separator: character that is used to split the input csv with
-  str: the input string that will be split
+  separator: character, char that is used to split the input csv with
+  str: string, the input string that will be split
 
   returns
   ----

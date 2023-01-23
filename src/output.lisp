@@ -16,13 +16,14 @@
 
   args
   ----
-  missing-header: a list that contains each spec of the validation
+  missing-header: list, contains each spec of the validation
   suite that couldn't be found back in the input csv file
-  outdir: filepath to the output directory where the results will be stored
+  outdir: string, filepath to the output directory where the results
+  will be stored
 
   returns
   ----
-  filepath to the header validation file
+  string, filepath to the header validation file
   "
   (let ((header-validation-file (format nil "~atmp_header_validation.csv" outdir))
 	(missing-cols (remove-duplicates (loop for spec in missing-header
@@ -46,11 +47,12 @@
 
   args
   ----
-  outdir: filepath to the output directory where the results will be stored
+  outdir: string, filepath to the output directory where the results
+  will be stored
 
   returns
   ----
-  filepath to the file that contains the header row
+  string, filepath to the file that contains the header row
   "
   (let ((header-file (format nil "~atmp_headerrow.csv" outdir)))
     (with-open-file (outstr header-file
@@ -65,12 +67,13 @@
 
   args
   ----
-  outdir: filepath to the output directory where the results will be stored
+  outdir: string, filepath to the output directory where the results
+  will be stored
   missing-header: a list that contains each spec of the validation
 
   returns
   ----
-  filepath to the final result file that contains all validations
+  string, filepath to the final result file that contains all validations
   "
   (let* ((result-header-file (write-result-header-file outdir))
 	 (header-validation-file
@@ -86,10 +89,10 @@
 
   args
   ----
-  str: output stream
-  index: the index (row number) of the input csv
-  spec: a single specification of a validation suite as a list
-  vals: the values that are relevant for this result
+  str: stream, output stream
+  index: string, the index (row number) of the input csv
+  spec: list, a single specification of a validation suite as a list
+  vals: list(string), the values that are relevant for this result
 
   returns
   ----

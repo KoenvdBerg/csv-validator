@@ -79,11 +79,11 @@
 
   args
   ----
-  in: filepath to the input csv file
-  outdir: filepath to the output directory where the results will be stored
+  in: string, filepath to the input csv file
+  outdir: string, filepath to the output directory where the results will be stored
   validation-suite: the suite to use to validate the input csv to
-  threads: integer that indicates the amount of threads to use. Best is between 1-4
-  delim: the csv delimiter
+  threads: integer, indicates the amount of threads to use. Best is between 1-4
+  delim: character, the csv delimiter
 
   returns
   ----

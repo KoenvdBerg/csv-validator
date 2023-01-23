@@ -24,8 +24,8 @@
 
   args
   ----
-  infile: filepath to the input csv file
-  delim: the csv delimiter
+  infile: string, filepath to the input csv file
+  delim: character, the csv delimiter
 
   returns
   ----
@@ -43,7 +43,7 @@
 
   args
   ----
-  header: list that contains the headers as strings
+  header: list(string), list that contains the headers as strings
   suite: the suite to use to validate the input csv to
 
   returns
@@ -70,8 +70,8 @@
 
   args
   ----
-  col-name: string that describes the column name
-  cols: list of column names to find the position in
+  col-name: string, describes the column name
+  cols: list(string), list of column names to find the position in
 
   returns
   ----
@@ -86,9 +86,9 @@
 
   args
   ----
-  header: list that contains the headers as strings
+  header: list(string), list that contains the headers as strings
   spec: a single specification of a validation suite as a list
-  record: list that holds the values of that record. Every value is string.
+  record: list(string), list that holds the values of that record. Every value is string.
 
   returns
   ----
@@ -104,7 +104,7 @@
 
   args
   ----
-  vals: list of values. Every value is string
+  vals: list(string), list of values. Every value is string
   spec: a single specification of a validation suite as a list
 
   returns
@@ -121,10 +121,10 @@
 
   args
   ----
-  in: filepath to the input csv file
-  outdir: filepath to the output directory where the results will be stored
+  in: string, filepath to the input csv file
+  outdir: string, filepath to the output directory where the results will be stored
   suite: the suite to use to validate the input csv to
-  delim: the csv delimiter
+  delim: character, the csv delimiter
 
   returns
   ----

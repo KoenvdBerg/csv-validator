@@ -2,8 +2,7 @@ csv-validator
 =============
 
 .. contents:: Table of Contents
-   
-Introductionary text here...
+
 
 Example
 
