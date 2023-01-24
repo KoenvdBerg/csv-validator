@@ -20,7 +20,22 @@ Example
 
 Benchmark
 ---------
-https://data.open-power-system-data.org/national_generation_capacity/2020-10-01
+
+This benchmark was performed using energy generation capacity data
+from data-source_. Csv-files with filesizes up to 200MB were validated
+using a validation suite with 18 or 36 validations and using 1 core or
+4 cores. Each combination was sampled three times and averaged
+thereafter. The results are shown in the table below:
+
+.. image:: data/benchmark_results.png
+  :width: 400
+  :alt: Alternative text
+
+	
+
+
+
+
 
 Get started
 ---------
@@ -69,3 +84,4 @@ On Slime, load the test package and run `run!`.
 Licence: BSD
 
 
+.. _data-source: https://data.open-power-system-data.org/national_generation_capacity/2020-10-01

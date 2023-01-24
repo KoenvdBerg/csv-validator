@@ -43,7 +43,7 @@
   t if float, else nil
   "
   (declare (type string x))
-  (let ((has-e (search "e" x)))
+  (let ((has-e (search "e" (string-downcase x))))
     (if has-e
 	(and (or (check-integer-string (subseq x 0 has-e))
 		 (check-float-string (subseq x 0 has-e)))
