@@ -1,6 +1,10 @@
 csv-validator
 =============
 
+.. image:: images/example.gif
+  :width: 925
+  :alt: Alternative text
+	      
 This package outlines an attempt to define a way of thinking about
 validating data in tabular format (CSV) similar to its Python
 homologue Great Expectations. It's been optimized for performance and
@@ -12,19 +16,14 @@ Lisp syntax.
 **Features:**
 
 - **Performant**: single core validation speed is ~10MB/s and
-  multicore validation speed is ~30MB/s.
+  multicore validation speed is ~30MB/s. Please see `Benchmark`_. 
 - **Extensible**: the entire validation suite is written in Common
-  Lisp.
+  Lisp. Please see `Get started`_.
 - **No-nonsense output**: output is a CSV file that contains location
-  of values that are not in line with the validation, including the
-  erronuous value.
+  of values that did not pass the validation, including the erronuous
+  value.
 - **Well tested**: each validation is unit-tested.
 
-.. image:: images/example.gif
-  :width: 925
-  :alt: Alternative text
-
-.. contents:: **Table of Contents**
 
 Get started
 ---------
@@ -50,13 +49,52 @@ meantime, install as follows:
 
      (csv-validator:check-not-null "test-value")
 
-   If this returns `T` all is right. 
+   If this returns ``T`` all is right. 
 
 
-Running your first validation
+Validating a simple CSV
 ~~~~~~~~~~
 
-Creating validations
+In the ``data/`` folder the file ``energy_sample.csv`` is
+located. This small csv file is used to illustrate how the
+csv-validator works.
+
+Let's start with defining a small validation suite. Open a new common
+lisp script and make sure that the csv-validator is correctly
+installed. Then define::
+
+
+  (defparameter *test_suite*
+   (list
+    (list
+    :column "ID"			;The column to be validated
+    :depends (list "ID")		;The value to use in the logic (see below)
+    :label "max-5-chars"		;The text to include in output in case of failed validation
+    :logic (lambda (ID)			;The logic for this validation. 
+	     (<= (length ID) 5)))))	;The value in the ID column should have 5 or less characters.
+
+Load the defined validation suite ``*test-suite*`` in the REPL and
+start the validation. Make sure that you include the correct path to
+the ``energy_sample.csv`` input data and that the output folder that
+you're writing to exists::
+
+  (csv-validator:validate-csv "/path/to/data/energy_sample.csv"
+  "/path/to/output/folder/" *test_suite* :delim #\;)
+
+Now open the file named ``csv-validator_validations.csv`` in the output folder and explore the result::
+
+  index;column;erronuous_value;label
+  11;ID;999999;max-5-chars
+
+As you can see the result itself is a CSV file (';' as delimiter). It
+correctly points out that the value in the ``ID`` column at index 11
+is longer than 5 characters.
+
+
+Header validations
+~~~~~~~~~~
+
+Record validations
 ~~~~~~~~~~
 
 
@@ -143,3 +181,17 @@ Licence: BSD
 
 
 .. _source: https://data.open-power-system-data.org/national_generation_capacity/2020-10-01
+
+YARD:
+
+This validation suite contains 1 validation. The following fields are defined:
+
+- **column**: Defines the column on which the validation will be
+  performed. In this case the ``ID`` column.
+- **depends**: A list that contains the columns from which the values
+  should be obtained that are used in the ``logic``. 
+- **label**: Text that will be included in the output in case of error.
+- **logic**: Defines the logic for the bounds of the values in the
+  ``column``. It does so by defining a function that has the exact
+  amount of input argument as in the ``depends`` field. In this case
+  that means 1 argument which is ``ID``.
