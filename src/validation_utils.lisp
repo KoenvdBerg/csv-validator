@@ -1,6 +1,4 @@
 ;; This file contains the utilities that are used to validate data.
-;;
-;; By: Koen van den Berg
 
 (in-package :csv-validator)
   

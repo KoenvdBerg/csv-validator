@@ -1,19 +1,5 @@
-;; This package validates data
-;;
-;; Author: Koen van den Berg
-;;
-;; ideas:
-;; 
-;; Es possible que hago una pieza de codigo que prueba los headers de un
-;; CSV archivo. Si los headers no son exactamente lo mismo que lo que
-;; esta definido en el base de datos de las validaciones, da un
-;; error. Puedo usar el mismo codigo que usare para hacer validaciones
-;; para los demas datos en las filas.
-;;
-;; Si una validacion da un error, este escrita a los resultados que
-;; incluya las columnas: nombre_columna, valor_equivocado, index,
-;; logica, mensaje_de_error. --> los valores para logica y mensaje de
-;; error son definidos en el 'suite' de validacion.
+;; This file contains functions to validate headers and records
+
 (in-package :csv-validator)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

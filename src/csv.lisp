@@ -1,11 +1,9 @@
 ;; Contains functions that parse in csv files
 ;;
-;; Shoutout to: https://github.com/ebobby/cl-simple-table
+;; Code inspired from: https://github.com/ebobby/cl-simple-table
 
 (in-package :csv-validator)
 
-;; funciones que sirven para cargar datos del archivo csv
-;; https://github.com/ebobby/cl-simple-table
 (defun split-string (separator str)
   "Splits a string using the given separator, returns a list with the substrings.
 

@@ -2,8 +2,8 @@
 
 (defsystem "csv-validator"
   :author "Koen van den Berg <k.vandenberg@insertdata.nl>"
-  :version "0.0.1"
-  :license "MIT"
+  :version "1.0.0"
+  :license "BSD-3"
   :description ""
   :homepage ""
   :bug-tracker ""
@@ -31,4 +31,4 @@
   ;; binary name: adapt.
   :build-pathname "csv-validator"
   ;; entry point: here "main" is an exported symbol. Otherwise, use a double ::
-  :entry-point "csv-validator:main")
+  :entry-point "csv-validator:validate-csv")

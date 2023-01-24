@@ -1,9 +1,5 @@
 ;; This file contains the functions that manipulate the output folder
-;; and create the final validation result file. The name for this file is:
-;;
-;; errors.csv
-;;
-;; By: Koen van den Berg
+;; and create the final validation result file.
 (in-package :csv-validator)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

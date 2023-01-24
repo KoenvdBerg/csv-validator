@@ -2,9 +2,6 @@ LISP ?= sbcl
 
 all: test
 
-run:
-	$(LISP) --load run.lisp
-
 build:
 	$(LISP)	--non-interactive \
 		--load csv-validator.asd \
