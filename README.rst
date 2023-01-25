@@ -37,14 +37,18 @@ meantime, install as follows:
 
      git clone  git@github.com:KoenvdBerg/csv-validator.git
 
-2. Open the LISP REPL and run::
+2. Copy the repository to your local quicklisp folder::
 
-     (load "/path/to/csv-validator.asd")
+     cp -r csv-validator/ ~/quicklisp/local-projects/
+
+3. Open the LISP REPL and run::
+
      (ql:quickload 'csv-validator)
 
      # For development load this as well:
      (in-package :csv-validator)
-3. Test if installation was succesfull by running::
+
+4. Test if installation was succesfull by running::
 
      (csv-validator:check-not-null "test-value")
 
