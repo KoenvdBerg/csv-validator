@@ -22,8 +22,7 @@
 				     (:file "output")
 				     (:file "csv")
 				     (:file "validator")
-     				     (:file "validation_utils")
-				     (:file "validation_suites"))))
+     				     (:file "validation_utils"))))
 
   ;; Build a binary:
   ;; don't change this line.

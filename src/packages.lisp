@@ -4,6 +4,7 @@
    :main
    :check-integer-string
    :check-float-string
+   :check-scientific-number-string   
    :check-number-string
    :check-number-in-range
    :check-date-parsable

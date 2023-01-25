@@ -17,8 +17,8 @@ Lisp syntax.
 
 - **Performant**: single core validation speed is ~10MB/s and
   multicore validation speed is ~30MB/s. Please see `Benchmark`_. 
-- **Extensible**: the entire validation suite is written in Common
-  Lisp thus new validations can be easily added. 
+- **Extensible**: validations are written in Common Lisp and stored in
+  validation suites. New validations can be easily added.
 - **No-nonsense output**: output is a CSV file that contains location
   of values that did not pass the validation, including the erronuous
   value.
@@ -237,7 +237,7 @@ Integer validation can be done using the build-in function:
   (csv-validator:check-integer-string "-99") --> t
   (csv-validator:check-integer-string "lk93") --> nil
 
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -257,7 +257,7 @@ Float validation can be done using the build-in function:
   (csv-validator:check-float-string "-99") --> nil
   (csv-validator:check-float-string "lk93") --> nil
 
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -278,7 +278,7 @@ Scientific number validation can be done using the build-in function:
   (csv-validator:check-scientific-number-string "-1.2E-1") --> t
   (csv-validator:check-scientific-number-string "lk93") --> nil
 
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -298,7 +298,7 @@ Number validation can be done using the build-in function:
   (csv-validator:check-number-string "-1.2E-1") --> t
   (csv-validator:check-number-string "lk93") --> nil
 
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -320,7 +320,7 @@ Number in range validation can be done using the build-in function:
   (csv-validator:check-number-in-range "10" nil 5) --> nil   ; no lower bound
   (csv-validator:check-number-in-range "kldsj" 0 50) --> nil
 
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -347,7 +347,7 @@ Date validation can be done using the build-in function:
   (csv-validator:check-date-parsable "2022/1/1") --> nil  
   (csv-validator:check-date-parsable "lksdjf") --> nil
 
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -370,7 +370,7 @@ Date validation can be done using the build-in function:
   (csv-validator:check-date-parsable "2022/1/1") --> nil  
   (csv-validator:check-date-parsable "lksdjf") --> nil
 
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -392,7 +392,7 @@ format ``yyyy-mm-dd`` and works as follows::
   (csv-validator:check-date-parsable "klsd") --> ignored
   (csv-validator:check-date-parsable "2023/01/20") --> ignored
   
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -412,7 +412,7 @@ format ``yyyy-mm-dd`` and works as follows::
   (csv-validator:check-compare-two-dates "2022-12-02" "1999-03-03") --> t
   (csv-validator:check-compare-two-dates "ksd" "nkdsl") --> ignored
   
-Use it in a suite like this::
+Use it in a validation suite like this::
 
    (defparameter *test_suite*
     (list
@@ -424,6 +424,32 @@ Use it in a suite like this::
 
 Missing data validations
 ~~~~~~~~~~~~~
+
+Missing value validation can be done using the build-in functions:
+``csv-validator:check-null`` and ``csv-validator:check-not-null``. They
+work as follows::
+
+  (csv-validator:check-null "1.23") -> nil
+  (csv-validator:check-null "NA") -> t
+  (csv-validator:check-null "klsdjfkl") -> nil
+  (csv-validator:check-null "") -> t
+
+  (csv-validator:check-not-null "1.23") -> t
+  (csv-validator:check-not-null "NA") -> nil
+  (csv-validator:check-not-null "klsdjfkl") -> t
+  (csv-validator:check-not-null "") -> nil
+
+Use it in a validation suite like this::
+
+   ;; validates column for missing values
+   (defparameter *test_suite*
+    (list
+     (list
+      :column "ID"
+      :depends (list "ID")
+      :label "ID-not-missing"
+      :logic (lambda (x) (csv-validator:check-not-null x)))))
+
 
 Example validation suite
 ~~~~~~~~~~~~~
@@ -608,33 +634,17 @@ lower than 1MB. The table below shows the results:
 
 - For file sizes up to 1MB it doesn't make sense to run the
   csv-validator using multiple threads.
-- The more checks are applied to the csv data, the slower the
+- The more validations are applied to the csv data, the slower the
   csv-validator is.
 
 Contributing
 ---------
 
-Tests are defined with [Fiveam](https://common-lisp.net/project/fiveam/docs/).
+Feel free to create a pull-request on this code-base. Please make sure
+that all the tests pass (run: ``make test``) and add new tests for new
+validations
 
-Run them from the terminal with `make test`. You should see a failing test.
+.. note::
 
-On Slime, load the test package and run `run!`.
-
-Licence: BSD
-
-
-.. _source: https://data.open-power-system-data.org/national_generation_capacity/2020-10-01
-
-YARD:
-
-This validation suite contains 1 validation. The following fields are defined:
-
-- **column**: Defines the column on which the validation will be
-  performed. In this case the ``ID`` column.
-- **depends**: A list that contains the columns from which the values
-  should be obtained that are used in the ``logic``. 
-- **label**: Text that will be included in the output in case of error.
-- **logic**: Defines the logic for the bounds of the values in the
-  ``column``. It does so by defining a function that has the exact
-  amount of input argument as in the ``depends`` field. In this case
-  that means 1 argument which is ``ID``.
+   Code repository has been created using cookiecutter with template:
+   https://github.com/vindarel/cl-cookieproject.
