@@ -644,7 +644,7 @@ Feel free to create a pull-request on this code-base. Please make sure
 that all the tests pass (run: ``make test``) and add new tests for new
 validations
 
-.. note::
+Code repository has been created using cookiecutter with template:
+https://github.com/vindarel/cl-cookieproject.
 
-   Code repository has been created using cookiecutter with template:
-   https://github.com/vindarel/cl-cookieproject.
+.. _source: https://data.open-power-system-data.org/national_generation_capacity/2020-10-01
