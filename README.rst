@@ -5,13 +5,16 @@ csv-validator
   :width: 925
   :alt: Alternative text
 	      
-This package outlines an attempt to define a way of thinking about
-validating data in tabular format (CSV) similar to its Python
+This project outlines an attempt to define a way of thinking about
+validating data in tabular format (CSV) inspired from its Python
 homologue Great Expectations. It's been optimized for performance and
 flexibility. It works by defining a set of validations that can be
-repeatedly applied to a tabular dataset in CSV format. The validations
-are stored in a validation suite that is written entirely in Common
-Lisp syntax.
+repeatedly applied to a tabular dataset in CSV format. This is
+especially useful in a datapipeline scenario where similar tabular
+(CSV) data is collected from different sources, and you like to
+validate the data before it enters downstream processing. The
+validations are stored in a validation suite that is written entirely
+in Common Lisp syntax.
 
 **Features:**
 
@@ -22,8 +25,8 @@ Lisp syntax.
 - **No-nonsense output**: output is a CSV file that contains location
   of values that did not pass the validation, including the erronuous
   value.
-- **Well tested**: each validation is unit-tested and builds are
-  tested to work on SBCL and ECL.
+- **Well tested**: each validation is unit-tested and compiles are
+  tested to work on SBCL, ECL, CLISP, CCL and ABCL on Linux OS. 
 
 .. contents:: **Table of Contents**
 
@@ -647,6 +650,8 @@ Contributing
 Feel free to create a pull-request on this code-base. Please make sure
 that all the tests pass (run: ``make test``) and add new tests for new
 validations
+
+Contact: reach out to me at: k.vandenberg@insertdata.nl
 
 Code repository has been created using cookiecutter with template:
 https://github.com/vindarel/cl-cookieproject.

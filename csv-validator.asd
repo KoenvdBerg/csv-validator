@@ -4,10 +4,10 @@
   :author "Koen van den Berg <k.vandenberg@insertdata.nl>"
   :version "1.0.0"
   :license "BSD-3"
-  :description ""
+  :description "Validates tabular CSV data using predefined validations, similar to its Python counterpart 'Great Expectations'."
   :homepage ""
   :bug-tracker ""
-  :source-control (:git "")
+  :source-control (:git "https://github.com/KoenvdBerg/csv-validator")
 
   ;; Dependencies.
   :depends-on (:local-time :lparallel :parse-float)
