@@ -48,7 +48,7 @@
 (test test-compare-two-dates
   ;; not valid
   (is (not (csv-validator:check-compare-two-dates "2022-02-02" "2022-03-03")))
-      ;; valid
+  ;; valid
   (is (csv-validator:check-compare-two-dates "2022-02-02" "2022/03/03"))
   (is (csv-validator:check-compare-two-dates "2022-01-01" "kldsa"))
   (is (csv-validator:check-compare-two-dates "klsdf" "kldsa"))

@@ -104,7 +104,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun move-working-dir (target-dir)
   "Move the workind directory to target-dir"
-  (sb-posix:chdir target-dir))
+  (uiop:chdir target-dir))
 
 (defun split-file-in-n (nr-files infile outdir)
   "Splits the tabular infile in N=nr-files splits that can be processed individually"

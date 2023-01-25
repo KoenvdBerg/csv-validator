@@ -1,4 +1,4 @@
-LISP ?= sbcl
+LISP ?= ecl
 
 all: test
 
