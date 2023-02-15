@@ -33,29 +33,17 @@ in Common Lisp syntax.
 Installation
 ---------
 
-This package is in the process of being added to quicklisp. In the
-meantime, install as follows:
+This package has been added to quicklisp. You can install it as follows:
 
-1. Clone this repository::
-
-     git clone  git@github.com:KoenvdBerg/csv-validator.git
-
-2. Copy the repository to your local quicklisp folder::
-
-     cp -r csv-validator/ ~/quicklisp/local-projects/
-
-3. Open the LISP REPL and run::
+1. Open the LISP REPL and run::
 
      (ql:quickload 'csv-validator)
 
-     # For development load this as well:
-     (in-package :csv-validator)
-
-4. Test if installation was succesfull by running::
+2. Test if installation was succesfull by running::
 
      (csv-validator:check-not-null "test-value")
 
-   If this returns ``T`` all is right. 
+   If this returns ``T`` the installation was successful. 
 
 
 Validating a simple CSV
@@ -393,11 +381,11 @@ To validate if a date is not in the future, use the build-in function:
 ``csv-validator:check-date-before-today``. It expects dates in the
 format ``yyyy-mm-dd`` and works as follows::
 
-  (csv-validator:check-date-parsable "2020-01-01") --> t
-  (csv-validator:check-date-parsable "2023-01-20") --> t
-  (csv-validator:check-date-parsable "2028-11-20") --> nil
-  (csv-validator:check-date-parsable "klsd") --> ignored
-  (csv-validator:check-date-parsable "2023/01/20") --> ignored
+  (csv-validator:check-date-before-today "2020-01-01") --> t
+  (csv-validator:check-date-before-today "2023-01-20") --> t
+  (csv-validator:check-date-before-today "2028-11-20") --> nil
+  (csv-validator:check-date-before-today "klsd") --> ignored
+  (csv-validator:check-date-before-today "2023/01/20") --> ignored
   
 Use it in a validation suite like this::
 
