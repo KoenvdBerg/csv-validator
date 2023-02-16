@@ -39,6 +39,9 @@ This package has been added to quicklisp. You can install it as follows:
 
      (ql:quickload 'csv-validator)
 
+   If the package doesn't seem available, please update your quicklisp
+   distribution to the latest version with: ``(ql:update-dist "quicklisp")``.
+
 2. Test if installation was succesfull by running::
 
      (csv-validator:check-not-null "test-value")
