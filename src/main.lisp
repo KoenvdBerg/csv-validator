@@ -2,6 +2,14 @@
 
 (in-package :csv-validator)
 
+(defun validate-csv2 (in validation-suite)
+  ;; todo: cond for mode here
+  ;; modes: output with idx, only metrics summary, header only
+  (validate-with-metrics in validation-suite))
+  
+
+  
+
 (defun validate-csv (in outdir validation-suite &key (threads 1) (delim #\,))
   "Main function that is used to apply the csv-validator to a dataset
 

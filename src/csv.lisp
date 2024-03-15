@@ -1,38 +1,78 @@
 ;; Contains functions that parse in csv files
-;;
-;; Code inspired from: https://github.com/ebobby/cl-simple-table
 
 (in-package :csv-validator)
 
-(defun split-string (separator str)
-  "Splits a string using the given separator, returns a list with the substrings.
+;; todo: move this to another spot later
+(defun getlines (infile)
+  (with-open-file (stream infile)
+    (loop for
+	  line = (read-line stream nil :eof)
+	  until (eq line :eof)
+	  do (csvline->vector line 20))))
 
-  args
-  ----
-  separator: character, char that is used to split the input csv with
-  str: string, the input string that will be split
 
-  returns
-  ----
-  list with elements between delimiter
+;;------------------------- PUBLIC  -------------------------
+(defun csvline->vector (line ncolumns &optional (configuration (csvconfig)))
+  "parses a line of csv to a vector given the csv-configuration"
+  (declare (string line))
+  (declare (fixnum ncolumns))
+  (let ((cur (cursor ncolumns line)))
+    (cursor-ret (parse-segments cur configuration))))
 
-  example
-  ----
-  name;age;gender --> (\"name\" \"age\" \"gender\")
-  "
-  (declare (type character separator)
-           (type string str))
-  (loop
-     with len = (length str)
-     for fr = 0 then (1+ in)
-     while (<= fr len)
-     for in = (or (position separator str :test #'char= :start fr) len)
-     collect (subseq str fr in)))
+(defun csvconfig (&optional (delim-char #\;) (quote-char #\") (escape-char #\\))
+  "create a csv-configuration struct"
+  (make-config :delim delim-char :quote-char quote-char :escape-char escape-char))
 
-(defun to-record (elements)
-  "Converts a sequence of elements into a record."
-  (coerce elements 'record))
+;;------------------------- STRUCTS -------------------------
+(defstruct cursor "the cursor for parsing a csv line"
+	   (idx 0) (line "") (ret (make-array 0)))
 
-(deftype record ()
-  "record type."
-  `(vector t *))
+(defun cursor (ncolumns csv-line)
+  (make-cursor :idx 0 :line csv-line :ret (make-array ncolumns :fill-pointer 0)))
+
+
+(defstruct config "the configuration for the csv-parser"
+	   delim quote-char escape-char)
+
+;;------------------------- PARSER -------------------------
+(defun parse-segments (cur configuration)
+  (let* ((upper (next-delim configuration
+			   (cursor-line cur)
+			   (cursor-idx cur)))
+	 (slice (sliceseg cur (second upper)))
+	 (found (strip-quote-chars slice (config-quote-char configuration))))
+    (vector-push found (cursor-ret cur))
+    (if (equal (car upper) 'continue) ;; not yet at end of line, continue
+	(progn
+	  (setf (cursor-idx cur) (+ (second upper) 1))
+	  (parse-segments cur configuration))
+	cur)))
+
+(defun is-escaped-delim (line idx configuration)
+  (if (<= idx 0)
+      nil
+      (let ((prev-char (aref line (- idx 1))))
+	(equal (config-escape-char configuration) prev-char))))
+
+(defun next-delim (configuration line from)
+  (let ((hit (position (config-delim configuration) line :test #'equal :start from)))
+    (if hit
+	(if (is-escaped-delim line hit configuration)
+	    ;; try again from next startpoint
+	    (next-delim configuration line (+ hit 1))
+	    `(continue ,hit))
+	;; the case when no hit is found return last line idx
+	`(eol ,(length line)))))
+
+(defun sliceseg (cur end)
+  (subseq (cursor-line cur) (cursor-idx cur) end))
+
+(defun strip-quote-chars (segment quote-char)
+  (if (<= (length segment) 0)
+      ""
+      (let ((fst (aref segment 0))
+	    (lst (aref segment (- (length segment) 1))))
+	(if (and (equal fst quote-char) (equal lst quote-char))
+	    (subseq segment 1 (- (length segment) 1))
+	    segment))))
+

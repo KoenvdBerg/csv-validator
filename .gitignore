@@ -3,4 +3,6 @@ src/*.fasl
 src/validation_suites.lisp
 src/column_validation.lisp
 src/cli.lisp
+tests/*.fasl
+*.fasl
 TODO.org

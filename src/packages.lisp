@@ -2,6 +2,8 @@
   (:use :cl)
   (:export
    :main
+   :csvline->vector
+   :csvconfig
    :check-integer-string
    :check-float-string
    :check-scientific-number-string   

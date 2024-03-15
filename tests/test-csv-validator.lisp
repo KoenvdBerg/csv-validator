@@ -1,13 +1,14 @@
 ;; tests the validation_utils
 (in-package :csv-validator-tests)
 
-(def-suite testmain
-  :description "test suite for validation utils")
-
-;;(setf fiveam:*on-failure* :debug)
+(def-suite csv-validator
+  :description "test the methods from the csv-validator")
 
 
-(in-suite testmain)
+;;----------------- VALIDATION UTIL TESTS -----------------
+(def-suite* validation-utilities
+  :description "test suite for validation utils"
+  :in csv-validator)
 
 ;; data type tests
 (test test-check-integer-string
@@ -125,3 +126,29 @@
   (is (check-number-in-range "5" 0 10))
   (is (check-number-in-range "-5" -10 0)))
 
+
+;;----------------- CSV PARSER TESTS -----------------
+
+(def-suite* csv-parser
+  :description "test suite for parsing csv-lines"
+  :in csv-validator)
+
+(test test-check-csvline-to-vector
+  (let ((config (csv-validator:csvconfig #\, #\" #\\)))
+
+    ;; some successful tests
+    (is (equalp (csv-validator:csvline->vector "1,2,3" 5 config) #("1" "2" "3")))
+    (is (equalp (csv-validator:csvline->vector "\"1\",\"2\",\"3\"" 5 config) #("1" "2" "3")))
+
+    ;; escaped delimiters are ignored and content is left intact
+    (is (equalp (csv-validator:csvline->vector "alpha,beta,gam\\,ma" 5 config) #("alpha" "beta" "gam\\,ma")))
+
+    ;; having a column size of less than total columns cuts off the column, as expected
+    (is (equalp (csv-validator:csvline->vector "\"1\",\"2\",\"3\"" 2 config) #("1" "2")))
+
+    ;; having the incorrect delimiter just parses the line
+    (is (equalp (csv-validator:csvline->vector "\"1\";\"2\";\"3\"" 5 config) #("1\";\"2\";\"3")))
+
+    ;; empty lines are parsed correctly as well
+    (is (equalp (csv-validator:csvline->vector ",1,2,3," 5 config) #(nil "1" "2" "3" nil)))
+    (is (equalp (csv-validator:csvline->vector ",,," 5 config) #(nil nil nil nil)))))
