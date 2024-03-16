@@ -2,7 +2,7 @@
 
 (defsystem "csv-validator"
   :author "Koen van den Berg <k.vandenberg@insertdata.nl>"
-  :version "1.0.0"
+  :version "2.0.0"
   :license "BSD-3"
   :description "Validates tabular CSV data using predefined validations, similar to its Python counterpart 'Great Expectations'."
   :homepage ""
@@ -10,7 +10,7 @@
   :source-control (:git "https://github.com/KoenvdBerg/csv-validator")
 
   ;; Dependencies.
-  :depends-on (:local-time :lparallel :parse-float)
+  :depends-on (:local-time :parse-float)
 
   ;; Project stucture.
   :serial t
@@ -18,8 +18,6 @@
                         :serial t
                         :components ((:file "packages")
                                      (:file "main")
-				     (:file "parallel")
-				     (:file "output")
 				     (:file "csv")
 				     (:file "validator")
      				     (:file "validation_utils"))))

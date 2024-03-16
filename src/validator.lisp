@@ -23,12 +23,29 @@
 
 ;;------------------ HEADER VALIDATION --------------------
 
-;; todo: move this elsewhere
+(defun validate-csv-header-only (in suite)
+  (let ((metrics (init-metrics suite)))
+    (with-open-file (stream in)
+      ;; header validation
+      (let* ((header (car (get-header-row stream suite)))
+    	     (results (validate-header header suite)))
+	(setf (metrics-found-headers metrics) (car results))
+	(setf (metrics-missing-headers metrics) (second results))))
+    metrics))
+
 (defun get-header-row (stream suite)
   (let ((header-row (csvline->vector (read-line stream nil :eof)
 		   (validation-suite-expected-n-columns suite)
 		   (validation-suite-csv-config suite))))
     `(,header-row ,stream)))
+
+(defun validate-header (header suite)
+  (let* ((found-headers (get-viable-headers header suite))
+	 (expected-headers (mapcar
+			    #'rule-column
+			    (validation-suite-validation-rules suite)))
+	 (missing (set-difference expected-headers found-headers :test #'equal)))
+    `(,found-headers ,missing)))
 
 (defun rule-can-be-appliedp (rule header)
   (let* ((depends (rule-depends rule))
@@ -39,37 +56,58 @@
 			 to-check)))
     (notany #'null found-columns)))
 	
-(defun filter-suite-present-cols (header suite)
+(defun get-viable-rules (header suite)
   (remove-if-not #'(lambda (rule) (rule-can-be-appliedp rule header))
 		 (validation-suite-validation-rules suite)))
 
+(defun get-viable-headers (header suite)
+  (mapcar #'rule-column (get-viable-rules header suite)))
+
+(defun get-viable-suite (header suite)
+  (let ((viable-rules (get-viable-rules header suite)))
+    (make-validation-suite
+     :name (validation-suite-name suite)
+     :expected-n-columns (validation-suite-expected-n-columns suite)
+     :n-columns-wiggle (validation-suite-n-columns-wiggle suite)
+     :csv-config (validation-suite-csv-config suite)
+     :validation-rules viable-rules)))
 
 ;;------------------ RECORD VALIDATION --------------------
-
-(defun validate-with-metrics (in suite)
-  (let ((metrics nil))
+	
+(defun validate-csv-with-mode (in suite mode)
+  (let ((metrics (init-metrics suite)))
     (with-open-file (stream in)
-      (let ((header (get-header-row stream suite)))
+      ;; header validation (reads 1st line of infile)
+      (let* ((header (get-header-row stream suite))
+    	     (results (validate-header (car header) suite))
+	     (viable-suite (get-viable-suite (car header) suite)))
+	(setf (metrics-found-headers metrics) (car results))
+	(setf (metrics-missing-headers metrics) (second results))
+	(setf (metrics-results metrics) (init-record-hash-table viable-suite))
 	(setf stream (second header))  ;; get-header-row reads 1st line
-	(loop for line = (read-line stream nil :eof) until (eq line :eof) do
+	;; record validation
+	(loop for line = (read-line stream nil :eof) for idx from 0 until (eq line :eof) do
 	  ;; todo: update metrics and finally return
-	  (validate-record line suite (car header)))))))
-
+	  ;; todo: make validate-record return rule-name
+	  ;; tood: add cond mode for what to add to the metrics
+	  (print (validate-record line viable-suite (car header)))
+	  finally (setf (metrics-nlines metrics) idx))))
+    metrics))
 
 (defun validate-record (line suite header)
   (let ((record (csvline->vector line
 				 (validation-suite-expected-n-columns suite)
 				 (validation-suite-csv-config suite))))
-    (when (not (equalp header record))
-      (mapcar #'(lambda (rule) (apply-validation-rule rule record header))
-	      (validation-suite-validation-rules suite)))))
+    (mapcar #'(lambda (rule) (apply-validation-rule rule record header))
+	    (validation-suite-validation-rules suite))))
 
 (defun apply-validation-rule (rule record header)
   (let ((logic (rule-logic rule))
+	(name (rule-name rule))
 	(vals (get-values header rule record)))
     (if (apply logic vals)
-	t
-	nil)))
+	`(,name pass)
+	`(,name fail))))
 
 (defun get-values (header rule record)
   (let ((depends (rule-depends rule)))
