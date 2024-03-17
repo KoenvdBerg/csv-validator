@@ -23,21 +23,19 @@
 
 ;;------------------ HEADER VALIDATION --------------------
 
-(defun validate-csv-header-only (in suite)
-  (let ((metrics (init-metrics suite)))
-    (with-open-file (stream in)
-      ;; header validation
-      (let* ((header (car (get-header-row stream suite)))
-    	     (results (validate-header header suite)))
-	(setf (metrics-found-headers metrics) (car results))
-	(setf (metrics-missing-headers metrics) (second results))))
+(defun validate-csv-header-only (stream suite)
+  (let* ((metrics (init-metrics suite))
+	 (header (get-header-row stream suite)) ;; reads 1st line (=header)
+    	 (results (validate-header header suite)))
+    (setf (metrics-found-headers metrics) (car results))
+    (setf (metrics-missing-headers metrics) (second results))
     metrics))
 
 (defun get-header-row (stream suite)
-  (let ((header-row (csvline->vector (read-line stream nil :eof)
+  (csvline->vector (read-line stream nil :eof)
 		   (validation-suite-expected-n-columns suite)
-		   (validation-suite-csv-config suite))))
-    `(,header-row ,stream)))
+		   (validation-suite-csv-config suite)))
+
 
 (defun validate-header (header suite)
   (let* ((found-headers (get-viable-headers header suite))
@@ -74,23 +72,23 @@
 
 ;;------------------ RECORD VALIDATION --------------------
 	
-(defun validate-csv-with-mode (in suite mode)
-  (let ((metrics (init-metrics suite)))
-    (with-open-file (stream in)
-      ;; header validation (reads 1st line of infile)
-      (let* ((header (get-header-row stream suite))
-    	     (results (validate-header (car header) suite))
-	     (viable-suite (get-viable-suite (car header) suite)))
-	(setf (metrics-found-headers metrics) (car results))
-	(setf (metrics-missing-headers metrics) (second results))
-	(setf (metrics-results metrics) (init-record-hash-table viable-suite))
-	(setf stream (second header))  ;; get-header-row reads 1st line
-	;; record validation
-	(loop for line = (read-line stream nil :eof) for idx from 0 until (eq line :eof) do
-	  (let ((validated-record (validate-record line viable-suite (car header) idx)))
-	    (update-metrics metrics validated-record)
-	    (update-metrics-table (metrics-results metrics) validated-record mode))
-	  finally (setf (metrics-nlines metrics) idx))))
+(defun validate-csv-with-mode (stream suite mode)
+  (let* ((metrics (init-metrics suite))
+	 (header (get-header-row stream suite)) ;; reads 1st line of infile
+    	 (results (validate-header header suite))
+	 (viable-suite (get-viable-suite header suite)))
+    (setf (metrics-found-headers metrics) (car results))
+    (setf (metrics-missing-headers metrics) (second results))
+    (setf (metrics-results metrics) (init-record-hash-table viable-suite))
+    ;; record validation
+    (loop for
+	  line = (read-line stream nil :eof)
+	  for idx from 0
+	  until (eq line :eof) do
+	    (let ((validated-record (validate-record line viable-suite header idx)))
+	      (update-metrics metrics validated-record)
+	      (update-metrics-table (metrics-results metrics) validated-record mode))
+	  finally (setf (metrics-nlines metrics) idx))
     metrics))
 
 (defun validate-record (line suite header idx)
