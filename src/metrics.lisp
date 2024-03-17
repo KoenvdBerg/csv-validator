@@ -50,8 +50,26 @@
      #'(lambda (rule) (setf (gethash (rule-name rule) table) (init-rule-metrics rule)))
      rules)
     table))
-    
-   
 
-(defun combine (m1 m2)
-  nil)
+;;------------------ UPDATING METRICS --------------------
+
+(defun update-metrics (metrics validations)
+  (let ((allpass? (mapcar #'(lambda (validation) (getf validation :pass?))
+			  validations)))
+    (if (notany #'null allpass?)
+	(setf (metrics-npass metrics) (+ (metrics-npass metrics) 1))
+	(setf (metrics-nfail metrics) (+ (metrics-nfail metrics) 1)))))
+
+(defun update-metrics-table (metrics-table validations mode)
+  (loop for validation in validations do
+    (let ((key (getf validation :name)))
+      (update-rule-metric (gethash key metrics-table) validation mode))))
+
+(defun update-rule-metric (metric validation mode)
+  (if (getf validation :pass?)
+      (setf (rule-metrics-npass metric) (+ (rule-metrics-npass metric) 1))
+      (setf (rule-metrics-nfail metric) (+ (rule-metrics-nfail metric) 1)))
+  (when (and (equal mode 'complete) (not (getf validation :pass?)))
+    (vector-push (getf validation :index) (rule-metrics-indices metric))
+    (vector-push (getf validation :values) (rule-metrics-values metric))))
+

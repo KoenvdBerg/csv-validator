@@ -87,27 +87,26 @@
 	(setf stream (second header))  ;; get-header-row reads 1st line
 	;; record validation
 	(loop for line = (read-line stream nil :eof) for idx from 0 until (eq line :eof) do
-	  ;; todo: update metrics and finally return
-	  ;; todo: make validate-record return rule-name
-	  ;; tood: add cond mode for what to add to the metrics
-	  (print (validate-record line viable-suite (car header)))
+	  (let ((validated-record (validate-record line viable-suite (car header) idx)))
+	    (update-metrics metrics validated-record)
+	    (update-metrics-table (metrics-results metrics) validated-record mode))
 	  finally (setf (metrics-nlines metrics) idx))))
     metrics))
 
-(defun validate-record (line suite header)
+(defun validate-record (line suite header idx)
   (let ((record (csvline->vector line
 				 (validation-suite-expected-n-columns suite)
 				 (validation-suite-csv-config suite))))
-    (mapcar #'(lambda (rule) (apply-validation-rule rule record header))
+    (mapcar #'(lambda (rule) (apply-validation-rule rule record header idx))
 	    (validation-suite-validation-rules suite))))
 
-(defun apply-validation-rule (rule record header)
+(defun apply-validation-rule (rule record header idx)
   (let ((logic (rule-logic rule))
 	(name (rule-name rule))
 	(vals (get-values header rule record)))
     (if (apply logic vals)
-	`(,name pass)
-	`(,name fail))))
+	`(:name ,name :pass? t :values ,vals :index ,idx)
+	`(:name ,name :pass? nil :values ,vals :index ,idx))))
 
 (defun get-values (header rule record)
   (let ((depends (rule-depends rule)))

@@ -18,6 +18,7 @@
                         :serial t
                         :components ((:file "packages")
                                      (:file "main")
+				     (:file "metrics")
 				     (:file "csv")
 				     (:file "validator")
      				     (:file "validation_utils"))))
