@@ -9,7 +9,6 @@
 (defstruct validation-suite "defines the contents of a validation suite"
 	   (name "")
 	   (expected-n-columns 10)
-	   (n-columns-wiggle 5)
 	   (csv-config (csvconfig))
 	   (validation-rules nil))
 
@@ -66,7 +65,6 @@
     (make-validation-suite
      :name (validation-suite-name suite)
      :expected-n-columns (validation-suite-expected-n-columns suite)
-     :n-columns-wiggle (validation-suite-n-columns-wiggle suite)
      :csv-config (validation-suite-csv-config suite)
      :validation-rules viable-rules)))
 

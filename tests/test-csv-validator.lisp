@@ -152,7 +152,6 @@
   (make-validation-suite
    :name "test"
    :expected-n-columns 3
-   :n-columns-wiggle 2
    :csv-config (csvconfig #\; #\" #\\)
    :validation-rules
    (list
