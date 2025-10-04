@@ -12,8 +12,7 @@
 
 (defun validate-csv (stream validation-suite mode)
   (cond
-    ((equal mode 'header-only) (validate-csv-header-only stream validation-suite))
-    ((equal mode 'summary) (validate-csv-with-mode stream validation-suite 'summary))
-    ((equal mode 'complete) (validate-csv-with-mode stream validation-suite 'complete))
+    ((string= mode 'header-only) (validate-csv-header-only stream validation-suite))
+    ((string= mode 'summary) (validate-csv-with-mode stream validation-suite 'summary))
+    ((string= mode 'complete) (validate-csv-with-mode stream validation-suite 'complete))
     (t (error (format nil "this mode has not been implemented: ~a" mode)))))
-

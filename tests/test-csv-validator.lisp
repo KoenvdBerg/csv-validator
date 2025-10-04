@@ -32,17 +32,6 @@
   (is (csv-validator:check-float-string "002.29")))
 
 
-(test test-check-scientific-number-string
-  ;; not valid
-  (is (not (csv-validator:check-scientific-number-string "-klsdf")))
-  (is (not (csv-validator:check-scientific-number-string "-191")))
-  (is (not (csv-validator:check-scientific-number-string "24ksd42")))
-  ;; valid
-  (is (csv-validator:check-scientific-number-string "1.42E10"))
-  (is (csv-validator:check-scientific-number-string "38.4e-3"))
-  (is (csv-validator:check-scientific-number-string "002.29e9")))
-
-
 (test test-check-number-string
   ;; not valid
   (is (not (csv-validator:check-number-string "-klsdf")))
@@ -150,5 +139,69 @@
     (is (equalp (csv-validator:csvline->vector "\"1\";\"2\";\"3\"" 5 config) #("1\";\"2\";\"3")))
 
     ;; empty lines are parsed correctly as well
-    (is (equalp (csv-validator:csvline->vector ",1,2,3," 5 config) #(nil "1" "2" "3" nil)))
-    (is (equalp (csv-validator:csvline->vector ",,," 5 config) #(nil nil nil nil)))))
+    (is (equalp (csv-validator:csvline->vector ",1,2,3," 5 config) #("" "1" "2" "3" "")))
+    (is (equalp (csv-validator:csvline->vector ",,," 5 config) #("" "" "" "")))))
+
+
+;;----------------- CSV VALIDATOR TESTS -----------------
+(def-suite* csv-validator-main
+  :description "test running the csv-validator main method"
+  :in csv-validator)
+
+(defparameter *test-suite*
+  (make-validation-suite
+   :name "test"
+   :expected-n-columns 3
+   :n-columns-wiggle 2
+   :csv-config (csvconfig #\; #\" #\\)
+   :validation-rules
+   (list
+    (make-rule
+     :name "ID_rule"
+     :column "ID"
+     :depends (list "ID")
+     :label "integer"
+     :logic (symbol-function 'csv-validator:check-integer-string))
+    (make-rule
+     :name "technology_rule"
+     :column "technology"
+     :depends (list "technology")
+     :label "string-length"
+     :logic (lambda (x) (< (length x) 5)))
+    (make-rule
+     :name "source_rule"
+     :column "source"
+     :depends (list "source")
+     :label "not-null"
+     :logic (symbol-function 'csv-validator:check-not-null)))))
+
+
+(defparameter *test-csv-input*
+"id;technology;source
+1;t1;BHM
+2;t2;BHM
+3;technology_too_long;BHM
+4;t4;")
+
+
+;; test main parameters of the suite
+(test test-csv-validator-string
+  (let ((result (validate-csv-string *test-csv-input* *test-suite* :mode 'summary)))
+    (is (equal (metrics-suite-name result) "test"))
+    (is (equal (metrics-nlines result) 4))
+    (is (equal (metrics-npass result) 2))
+    (is (equal (metrics-nfail result) 2))
+    (is (equal (metrics-found-headers result) '("technology" "source")))
+    (is (equal (metrics-missing-headers result) '("ID")))))
+
+(test test-csv-validator-rules
+  (let* ((result (validate-csv-string *test-csv-input* *test-suite* :mode 'complete))
+	 (techresult (gethash "technology_rule" (metrics-results result))))
+    (is (equal (rule-metrics-rule-name techresult) "technology_rule"))
+    (is (equal (rule-metrics-rule-label techresult) "string-length"))
+    (is (equal (rule-metrics-npass techresult) 3))
+    (is (equal (rule-metrics-nfail techresult) 1))
+    (is (equalp (rule-metrics-indices techresult) #(2)))
+    (is (equalp (rule-metrics-values techresult) #(("technology_too_long"))))))
+
+  

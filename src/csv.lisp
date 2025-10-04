@@ -76,3 +76,14 @@
 	    (subseq segment 1 (- (length segment) 1))
 	    segment))))
 
+
+;;------------------------- UTILITIES -------------------------
+(defun count-lines (stream acc)
+  (let ((still-reading? (read-line stream nil)))
+    (if still-reading?
+	(count-lines stream (+ acc 1))
+	acc)))
+
+(defun file-nr-lines (infile)
+  (with-open-file (stream infile)
+    (count-lines stream 0)))

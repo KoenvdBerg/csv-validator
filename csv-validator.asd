@@ -10,7 +10,7 @@
   :source-control (:git "https://github.com/KoenvdBerg/csv-validator")
 
   ;; Dependencies.
-  :depends-on (:local-time :parse-float)
+  :depends-on (:local-time)
 
   ;; Project stucture.
   :serial t

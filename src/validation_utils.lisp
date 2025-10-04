@@ -11,12 +11,9 @@
   t if integer, else nil
   "
   (declare (type string x))
-  (when (check-not-null x)
-    (let* ((is-negative (string= (subseq x 0 1) "-")))
-      (if is-negative
-	  (every #'digit-char-p (subseq x 1))
-	  (every #'digit-char-p x)))))
-
+  (ignore-errors
+   (with-input-from-string (in x)
+     (integerp (read in)))))
 
 (defun check-float-string (x)
   "Checks if the incoming string is a float
@@ -26,27 +23,9 @@
   t if float, else nil
   "
   (declare (type string x))
-  (let ((has-dot (search "." x)))
-    (if has-dot
-	(and (check-integer-string (subseq x 0 has-dot))
-	     (check-integer-string (subseq x (1+ has-dot) (length x))))
-	nil)))
-
-
-(defun check-scientific-number-string (x)
-  "Checks if the incoming string is a scientific number
-
-  returns
-  ----
-  t if float, else nil
-  "
-  (declare (type string x))
-  (let ((has-e (search "e" (string-downcase x))))
-    (if has-e
-	(and (or (check-integer-string (subseq x 0 has-e))
-		 (check-float-string (subseq x 0 has-e)))
-	     (check-integer-string (subseq x (1+ has-e) (length x))))
-	nil)))
+  (ignore-errors
+   (with-input-from-string (in x)
+     (floatp (read in)))))
 
 
 (defun check-number-string (x)
@@ -57,8 +36,7 @@
   t if number, else nil
   "
   (or (check-float-string x)
-      (check-integer-string x)
-      (check-scientific-number-string x)))
+      (check-integer-string x)))
 
 
 (defun check-date-parsable (x)
@@ -166,8 +144,9 @@
   t if x isn't integer or within range
 "
   (if (check-number-string x)
-      (let ((pint (parse-float:parse-float x)))
+      (with-input-from-string (in x)
+	(let ((pint (read in)))
 	(cond ((null range-start) (< pint range-end))
 	      ((null range-end) (> pint range-start))
-	      (t (and (< pint range-end) (> pint range-start)))))
+	      (t (and (< pint range-end) (> pint range-start))))))
       nil))
